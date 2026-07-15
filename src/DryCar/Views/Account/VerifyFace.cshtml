@@ -1,0 +1,19 @@
+@{ ViewData["Title"] = "Yüz doğrulama"; }
+<section class="container py-5" style="max-width: 880px"
+         data-face-verification
+         data-endpoint="@Url.Action("VerifyFacePost", "Account")">
+    @Html.AntiForgeryToken()
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-7">
+            <video class="w-100 rounded-4 bg-dark shadow" autoplay playsinline muted></video>
+            <canvas hidden></canvas>
+        </div>
+        <div class="col-lg-5">
+            <h1>Yüz doğrulama</h1>
+            <p>Yüzünüzü çerçeveye alın. Başlatınca ekrandaki komuta göre bir kez göz kırpın.</p>
+            <div data-status class="alert alert-info">Kamera hazırlanıyor…</div>
+            <button data-start class="btn btn-primary w-100" type="button" disabled>Doğrulamayı başlat</button>
+        </div>
+    </div>
+</section>
+@section Scripts { <script src="~/js/face-verification.js" asp-append-version="true"></script> }

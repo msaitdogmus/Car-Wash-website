@@ -1,0 +1,15 @@
+@model Appointment
+@using System.Collections.Generic
+@{
+    ViewData["Title"] = "Randevuyu düzenle";
+    var services = ViewBag.Services as IEnumerable<Service> ?? Enumerable.Empty<Service>();
+}
+<section class="container py-5" style="max-width: 680px">
+    <h1>Randevuyu düzenle</h1>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="vstack gap-3">
+        <div><label asp-for="ServiceId" class="form-label">Hizmet</label><select asp-for="ServiceId" class="form-select">@foreach (var service in services) { <option value="@service.Id">@service.Name</option> }</select></div>
+        <div><label asp-for="AppointmentDate" class="form-label">Tarih ve saat</label><input asp-for="AppointmentDate" class="form-control" type="datetime-local" /></div>
+        <button class="btn btn-primary" type="submit">Değişiklikleri kaydet</button>
+    </form>
+</section>

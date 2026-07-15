@@ -1,25 +1,49 @@
-# Güvenlik ve gizlilik notu
+# Güvenlik politikası
 
-DryCar Care gerçek kullanıcı ve randevu verileriyle çalışan bir uygulamadır. Bu nedenle herkese açık depo, üretim sisteminin birebir kopyası olarak kullanılmaz.
+DryCar Care müşteri iletişim bilgileri, randevu kayıtları ve biyometrik şablonlarla çalıştığı için güvenlik bildirimlerini ciddiye alır.
 
-## Depoda paylaşılmayan bilgiler
+## Desteklenen sürüm
 
-- Parolalar ve parola özetleri
-- API anahtarları, OAuth istemci sırları ve erişim belirteçleri
-- Veritabanı sunucusu ve bağlantı bilgileri
-- E-posta hesabı yetkilendirme bilgileri
-- Müşteri, randevu ve biyometrik veriler
-- Canlı sunucuya özgü dağıtım ayarları
+| Sürüm | Güvenlik güncellemesi |
+| --- | --- |
+| `main` / 1.x | Destekleniyor |
+| 1.0 öncesi | Desteklenmiyor |
 
-Bu değerler kaynak dosyalarda tutulmaz; üretim ortamında erişimi sınırlandırılmış ortam değişkenlerinden okunur. Örnek yapılandırma hazırlanması gerekirse yalnızca boş yer tutucular kullanılır.
+## Açık bildirme
 
-## Uygulama tarafındaki temel önlemler
+Bir güvenlik sorunu bulursanız herkese açık issue açmayın. GitHub'ın özel güvenlik bildirimini kullanın:
 
-- Form gönderimlerinde antiforgery doğrulaması
-- Müşteri ve yönetici işlemlerinde kimlik doğrulama ve rol kontrolü
-- Parolaların BCrypt ile tek yönlü saklanması
-- Randevu uygunluğunun istemciye güvenmeden sunucuda doğrulanması
-- Harici metinlerin güvenli biçimde ekrana yazılması ve URL protokol kontrolü
-- Uygulama servisinin yalnızca yerel arayüzde çalışması
+https://github.com/msaitdogmus/Car-Wash-website/security/advisories/new
 
-Herkese açık kod örnekleri üretim kodunun sınırlı ve sadeleştirilmiş parçalarıdır. İş kurallarının tamamı güvenlik sağlamak için değil, ticari ve kişisel veri gizliliğini korumak amacıyla özel tutulur; asıl güvenlik kontrolleri her zaman sunucu tarafında uygulanır.
+Bildirimde mümkünse şunları ekleyin:
+
+- Etkilenen dosya veya endpoint
+- Sorunu yeniden üretme adımları
+- Beklenen ve gerçekleşen davranış
+- Olası etki
+- Varsa güvenli çözüm önerisi
+
+Gerçek müşteri verisi, erişim tokenı, parola, yüz görüntüsü veya biyometrik şablon göndermeyin. Kanıt için yapay test verisi kullanın.
+
+## Yanıt süreci
+
+- Bildirimin alındığı mümkün olan en kısa sürede doğrulanır.
+- Etki ve istismar edilebilirlik incelenir.
+- Düzeltme özel dalda hazırlanır ve test edilir.
+- Gerekirse token/anahtar döndürme adımları uygulanır.
+- Düzeltme yayımlandıktan sonra uygun kapsamda güvenlik notu paylaşılır.
+
+## Kapsam
+
+Aşağıdakiler özellikle önemlidir:
+
+- Kimlik doğrulama veya yönetici yetkisi atlama
+- CSRF, XSS, SQL injection ve oturum ele geçirme
+- Parola sıfırlama tokenının kötüye kullanılması
+- Yüz şablonu veya geçici görüntünün açığa çıkması
+- Data Protection anahtar yönetimi hatası
+- Gmail OAuth tokenının sızması
+- Dosya yolu veya Python süreç argümanı enjeksiyonu
+- Randevu kapasitesini veya hediye bakiyesini bozabilen yarış koşulu
+
+Genel mimari ve mevcut savunmalar için [güvenlik ve yüz doğrulama belgesini](docs/GUVENLIK_VE_YUZ_DOGRULAMA.md) okuyun.

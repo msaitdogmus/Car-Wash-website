@@ -1,0 +1,6 @@
+@model IEnumerable<Service>
+@{ ViewData["Title"] = "Hizmetler"; }
+<section class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4"><h1 class="mb-0">Hizmetler</h1><a class="btn btn-primary" asp-action="CreateService">Hizmet ekle</a></div>
+    <div class="row g-3">@foreach (var service in Model) { <div class="col-md-6"><div class="card h-100"><div class="card-body"><h2 class="h5">@service.Name</h2><p>@service.Description</p><strong>@service.Price.ToString("N2") ₺</strong></div><div class="card-footer bg-white"><a class="btn btn-sm btn-outline-primary" asp-action="EditService" asp-route-id="@service.Id">Düzenle</a><form asp-action="DeleteService" asp-route-id="@service.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-danger">Sil</button></form></div></div></div> }</div>
+</section>

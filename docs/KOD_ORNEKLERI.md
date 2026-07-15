@@ -1,91 +1,68 @@
-# Seçilmiş kod örnekleri
+# Kod okuma rehberi
 
-Buradaki parçalar projenin yaklaşımını anlatmak için sadeleştirildi. Canlı sistemdeki sınıf adları, iş kurallarının tamamı ve üretim ayarları özellikle paylaşılmadı. Örneklerde parola, anahtar, bağlantı bilgisi veya kullanıcı verisi bulunmaz.
+Repo artık yalnız sadeleştirilmiş örnekler değil, uygulamanın güvenli açık kaynak sürümünü içeriyor. Aşağıdaki sıra kodu daha rahat takip etmeyi sağlar.
 
-## Güvenli randevu oluşturma akışı
+## 1. Uygulama başlangıcı
 
-Randevu isteğini yalnızca arayüzde kontrol etmek yeterli değil. Aynı tarih ve saatin dolu olup olmadığını sunucuda yeniden denetliyor, kullanıcı kimliğini oturumdan alıyor ve hizmet fiyatını istemciden kabul etmek yerine veritabanından okuyoruz.
+- [`Program.cs`](../src/DryCar/Program.cs): Kestrel ve adlandırılmış `HttpClient` ayarları
+- [`Startup.cs`](../src/DryCar/Startup.cs): bağımlılık kaydı, SQL Server, oturum, CSRF, Data Protection ve middleware sırası
 
-```csharp
-[Authorize]
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> RandevuOlustur(
-    RandevuFormu form,
-    CancellationToken cancellationToken)
-{
-    if (!ModelState.IsValid)
-        return View(form);
+İlk olarak bu iki dosyayı okuyunca uygulamadaki servislerin nasıl bir araya geldiği görülür.
 
-    var kullaniciId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    if (string.IsNullOrWhiteSpace(kullaniciId))
-        return Challenge();
+## 2. Veri modeli
 
-    // Fiyatı ve hizmet durumunu tarayıcıdan gelen bilgiye göre belirlemiyoruz.
-    var hizmet = await _db.Hizmetler
-        .AsNoTracking()
-        .SingleOrDefaultAsync(
-            x => x.Id == form.HizmetId && x.Aktif,
-            cancellationToken);
+- [`ApplicationDbContext.cs`](../src/DryCar/Data/ApplicationDbContext.cs)
+- [`User.cs`](../src/DryCar/Models/User.cs)
+- [`Appointment.cs`](../src/DryCar/Models/Appointment.cs)
+- [`Service.cs`](../src/DryCar/Models/Service.cs)
+- [`Notification.cs`](../src/DryCar/Models/Notification.cs)
 
-    if (hizmet is null)
-    {
-        ModelState.AddModelError(nameof(form.HizmetId), "Hizmet bulunamadı.");
-        return View(form);
-    }
+Kullanıcı modeli yalnız profil bilgisini değil, hediye yıkama döngüsünün durumunu da taşır. Randevu modeli onay, arşiv ve hediye kullanımını ayrı alanlarla izler.
 
-    var saatDolu = await _db.Randevular.AnyAsync(
-        x => x.Tarih == form.Tarih
-             && x.Saat == form.Saat
-             && x.Durum != RandevuDurumu.Iptal,
-        cancellationToken);
+## 3. Randevu kuralları
 
-    if (saatDolu)
-    {
-        ModelState.AddModelError(nameof(form.Saat), "Bu saat az önce doldu.");
-        return View(form);
-    }
+[`AppointmentController.cs`](../src/DryCar/Controllers/AppointmentController.cs) içinde şu akışlar birlikte bulunur:
 
-    _db.Randevular.Add(new Randevu
-    {
-        KullaniciId = kullaniciId,
-        HizmetId = hizmet.Id,
-        Tarih = form.Tarih,
-        Saat = form.Saat,
-        Fiyat = hizmet.Fiyat,
-        Durum = RandevuDurumu.Bekliyor
-    });
+- uygun slot üretimi,
+- geçmiş saat kontrolü,
+- toplam kapasite sınırı,
+- aynı hizmetin aynı saatte tekrarlanmasını engelleme,
+- müşterinin yalnız kendi randevusunu değiştirebilmesi,
+- iptalde ayrılmış hediye hakkının geri verilmesi.
 
-    await _db.SaveChangesAsync(cancellationToken);
-    return RedirectToAction(nameof(Randevularim));
-}
-```
+Yönetici tarafındaki karşılığı [`AdminController.cs`](../src/DryCar/Controllers/AdminController.cs) içindedir. Bu dosyada hizmet yönetimi, toplu onay ve hediye döngüsü de görülebilir.
 
-Üretimde bu kontrol, aynı anda gelen iki isteğe karşı veritabanı kısıtı ve kontrollü hata dönüşüyle de desteklenir. Böylece arayüzde boş görünen bir saatin iki kişiye birden verilmesi önlenir.
+## 4. Parola ve yüz doğrulama
 
-## Harici içeriği güvenli gösterme
+Ana HTTP akışı [`AccountController.cs`](../src/DryCar/Controllers/AccountController.cs) içindedir. Parola doğrulandıktan sonra kullanıcıya doğrudan yetki verilmez; yüz doğrulama bitene kadar bekleyen oturum kullanılır.
 
-Haber akışından gelen metinleri `innerHTML` ile sayfaya yazmıyoruz. Bağlantının protokolünü kontrol ediyor, metni ise tarayıcının güvenli `textContent` özelliğiyle yerleştiriyoruz.
+Yüz işleme algoritmasının tamamı [`extract_vector.py`](../src/DryCar/python/extract_vector.py) dosyasındadır. Bu dosya:
 
-```javascript
-function guvenliBaglanti(deger) {
-    try {
-        const adres = new URL(deger, window.location.origin);
-        const izinli = adres.protocol === "https:" || adres.protocol === "http:";
-        return izinli ? adres.href : "#";
-    } catch {
-        return "#";
-    }
-}
+- yüz bulur,
+- en büyük yüzü seçer,
+- parlaklık ve netlik kontrolü yapar,
+- göz işaret noktalarından EAR hesaplar,
+- göz kırpma geçişini denetler,
+- 128 boyutlu yüz şablonu üretir.
 
-function haberiGoster(kart, haber) {
-    const baslik = kart.querySelector("[data-haber-baslik]");
-    const baglanti = kart.querySelector("[data-haber-link]");
+Şablonun veritabanında korunması [`FaceVectorProtector.cs`](../src/DryCar/Services/FaceVectorProtector.cs) ile yapılır. Tarayıcı tarafındaki kare yakalama ve antiforgery başlığı [`face-verification.js`](../src/DryCar/wwwroot/js/face-verification.js) içindedir.
 
-    // textContent, dış kaynaktan gelen HTML'in çalışmasını engeller.
-    baslik.textContent = String(haber.baslik ?? "Güncel haber");
-    baglanti.href = guvenliBaglanti(haber.url);
-}
-```
+## 5. E-posta ve arka plan işleri
 
-Bu örnekler projenin tamamı değildir; okunabilirlik için günlükleme, bildirim, ayrıntılı doğrulama ve bazı iş kuralları çıkarılmıştır.
+- [`GmailApiEmailSender.cs`](../src/DryCar/Services/GmailApiEmailSender.cs): OAuth token yenileme ve Gmail gönderimi
+- [`FreeDealNotifier.cs`](../src/DryCar/Services/FreeDealNotifier.cs): ilk bildirim ve hatırlatma içeriği
+- [`FreeDealReminderWorker.cs`](../src/DryCar/Services/FreeDealReminderWorker.cs): periyodik süre kontrolü
+- [`AdminSeedWorker.cs`](../src/DryCar/Services/AdminSeedWorker.cs): güvenli ilk yönetici oluşturma
+
+## 6. Harici veriler
+
+- [`KirsehirWeatherService.cs`](../src/DryCar/Services/KirsehirWeatherService.cs)
+- [`KirsehirLiveNewsService.cs`](../src/DryCar/Services/KirsehirLiveNewsService.cs)
+- [`KirsehirGoogleNewsRssService.cs`](../src/DryCar/Services/KirsehirGoogleNewsRssService.cs)
+- [`KirsehirHaberTurkNewsService.cs`](../src/DryCar/Services/KirsehirHaberTurkNewsService.cs)
+
+Harici servis hataları ana sayfayı düşürmez. Servisler hata halinde boş veya `null` sonuç döndürür; arayüz kendi boş durumunu gösterir.
+
+## 7. Arayüz
+
+Razor sayfaları [`Views`](../src/DryCar/Views) altında, genel stiller ve JavaScript dosyaları [`wwwroot`](../src/DryCar/wwwroot) altındadır. Müşteri ve yönetici ekranları aynı model ve denetleyici kurallarını kullanır; kritik doğrulamalar yalnız tarayıcıya bırakılmaz.

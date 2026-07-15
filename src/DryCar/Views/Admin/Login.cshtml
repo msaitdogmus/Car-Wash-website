@@ -1,0 +1,10 @@
+@{ ViewData["Title"] = "Yönetici girişi"; }
+<section class="container py-5" style="max-width: 520px">
+    <h1>Yönetim paneli</h1>
+    @if (ViewBag.Error is string error) { <div class="alert alert-danger">@error</div> }
+    <form asp-action="Login" method="post" class="vstack gap-3">
+        <div><label for="username" class="form-label">Kullanıcı adı</label><input id="username" name="username" class="form-control" autocomplete="username" required /></div>
+        <div><label for="password" class="form-label">Parola</label><input id="password" name="password" type="password" class="form-control" autocomplete="current-password" required /></div>
+        <button class="btn btn-primary" type="submit">Giriş yap</button>
+    </form>
+</section>

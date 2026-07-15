@@ -1,0 +1,15 @@
+@model Appointment
+@using System.Collections.Generic
+@{
+    var users = ViewBag.Users as IEnumerable<User> ?? Enumerable.Empty<User>();
+    var services = ViewBag.Services as IEnumerable<Service> ?? Enumerable.Empty<Service>();
+}
+<form method="post" class="vstack gap-3">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div><label class="form-label" for="userId">Müşteri</label><select class="form-select" id="userId" name="userId">@foreach (var user in users) { <option value="@user.Id" selected="@(user.Id == Model.UserId ? "selected" : null)">@user.FirstName @user.LastName — @user.Email</option> }</select></div>
+    <div><label class="form-label" for="serviceId">Hizmet</label><select class="form-select" id="serviceId" name="serviceId">@foreach (var service in services) { <option value="@service.Id" selected="@(service.Id == Model.ServiceId ? "selected" : null)">@service.Name</option> }</select></div>
+    <div><label class="form-label" for="appointmentDate">Tarih</label><input class="form-control" id="appointmentDate" name="appointmentDate" type="date" value="@Model.AppointmentDate.ToString("yyyy-MM-dd")" /></div>
+    <div><label class="form-label" for="appointmentTime">Saat</label><input class="form-control" id="appointmentTime" name="appointmentTime" type="time" value="@Model.AppointmentDate.ToString("HH:mm")" min="07:00" max="19:30" step="1800" /></div>
+    <button class="btn btn-primary" type="submit">Kaydet</button>
+</form>

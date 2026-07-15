@@ -1,0 +1,9 @@
+@model IEnumerable<Appointment>
+@{ ViewData["Title"] = "Yönetim"; }
+<section class="container py-5">
+    <div class="d-flex flex-wrap justify-content-between gap-2 mb-4"><h1 class="mb-0">Yaklaşan randevular</h1><div class="d-flex gap-2"><a class="btn btn-outline-primary" asp-action="Services">Hizmetler</a><a class="btn btn-primary" asp-action="CreateAppointment">Randevu ekle</a></div></div>
+    <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Müşteri</th><th>Hizmet</th><th>Tarih</th><th></th></tr></thead><tbody>
+    @foreach (var appointment in Model) { <tr><td>@appointment.User?.FirstName @appointment.User?.LastName</td><td>@appointment.Service?.Name</td><td>@appointment.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</td><td class="text-end"><a class="btn btn-sm btn-outline-primary" asp-action="EditAppointment" asp-route-id="@appointment.Id">Düzenle</a><form asp-action="DeleteAppointment" asp-route-id="@appointment.Id" method="post" class="d-inline"><button class="btn btn-sm btn-outline-danger">Sil</button></form></td></tr> }
+    </tbody></table></div>
+    <a asp-action="PastAppointments">Geçmiş randevuları yönet</a>
+</section>

@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = "Ana sayfa";
+}
+<section class="container py-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="badge text-bg-primary mb-3">Kırşehir araç bakım merkezi</span>
+            <h1 class="display-4 fw-bold">Aracınız temiz, zamanınız size kalsın.</h1>
+            <p class="lead text-secondary">Hizmeti ve uygun saati seçin; sıra beklemeden randevunuzu oluşturun.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary btn-lg" asp-controller="Appointment" asp-action="Book">Randevu al</a>
+                <a class="btn btn-outline-dark btn-lg" asp-controller="Home" asp-action="About">Bizi tanıyın</a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <img class="img-fluid rounded-4 shadow" src="~/images/DryCar_Sekme_2.png" alt="DryCar Care" />
+        </div>
+    </div>
+</section>
+<section class="bg-light border-top border-bottom py-5">
+    <div class="container">
+        <div class="row g-3 text-center">
+            <div class="col-md-4"><div class="bg-white rounded-4 p-4 h-100"><h2 class="h5">Online randevu</h2><p class="mb-0 text-secondary">Doluluk anlık kontrol edilir.</p></div></div>
+            <div class="col-md-4"><div class="bg-white rounded-4 p-4 h-100"><h2 class="h5">Güvenli hesap</h2><p class="mb-0 text-secondary">Parola ve yüz doğrulama birlikte çalışır.</p></div></div>
+            <div class="col-md-4"><div class="bg-white rounded-4 p-4 h-100"><h2 class="h5">Hediye takibi</h2><p class="mb-0 text-secondary">Kazanılan yıkama hakları panelde görünür.</p></div></div>
+        </div>
+    </div>
+</section>
