@@ -1,0 +1,35 @@
+# .NET build output
+bin/
+obj/
+publish/
+
+# Local and secret configuration
+.env
+.env.*
+appsettings.*.local.json
+src/**/appsettings.json
+src/**/appsettings.Development.json
+src/**/appsettings.Production.json
+!src/**/appsettings.example.json
+secrets.json
+
+# IDE and OS files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+
+# Logs and local databases
+*.log
+*.db
+*.db-shm
+*.db-wal
+
+# Python environment and bytecode
+.venv/
+venv/
+__pycache__/
+*.py[cod]
