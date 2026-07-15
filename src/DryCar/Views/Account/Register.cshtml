@@ -1,0 +1,42 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "Kayıt"; }
+<section class="container py-5" style="max-width: 760px">
+    <h1>Yeni hesap</h1>
+    <p class="text-secondary">Hesap güvenliği için bir yüz şablonu oluşturulur. Fotoğraf kalıcı olarak saklanmaz.</p>
+    @if (ViewBag.Error is string error) { <div class="alert alert-danger">@error</div> }
+    <form asp-action="Register" method="post" class="row g-3" id="registerForm">
+        <div class="col-md-6"><label asp-for="FirstName" class="form-label">Ad</label><input asp-for="FirstName" class="form-control" required /></div>
+        <div class="col-md-6"><label asp-for="LastName" class="form-label">Soyad</label><input asp-for="LastName" class="form-control" required /></div>
+        <div class="col-md-6"><label asp-for="Email" class="form-label">E-posta</label><input asp-for="Email" class="form-control" type="email" required /></div>
+        <div class="col-md-6"><label asp-for="Phone" class="form-label">Telefon</label><input asp-for="Phone" class="form-control" required /></div>
+        <div class="col-12"><label asp-for="Password" class="form-label">Parola</label><input asp-for="Password" class="form-control" minlength="10" required /></div>
+        <div class="col-12">
+            <video id="registerVideo" class="w-100 rounded-4 bg-dark" autoplay playsinline muted style="max-height:420px"></video>
+            <canvas id="registerCanvas" hidden></canvas>
+            <input asp-for="FaceBase64" type="hidden" id="FaceBase64" />
+            <button class="btn btn-outline-primary mt-2" id="captureFace" type="button">Yüz görüntüsünü hazırla</button>
+            <span id="captureStatus" class="ms-2 text-secondary"></span>
+        </div>
+        <div class="col-12"><button class="btn btn-primary" type="submit">Kaydı tamamla</button></div>
+    </form>
+</section>
+@section Scripts {
+<script>
+(() => {
+    const video = document.getElementById("registerVideo");
+    const canvas = document.getElementById("registerCanvas");
+    const hidden = document.getElementById("FaceBase64");
+    const status = document.getElementById("captureStatus");
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+        .then(stream => { video.srcObject = stream; })
+        .catch(() => { status.textContent = "Kamera izni alınamadı."; });
+    document.getElementById("captureFace").addEventListener("click", () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+        hidden.value = canvas.toDataURL("image/jpeg", .85);
+        status.textContent = "Görüntü hazır.";
+    });
+})();
+</script>
+}
