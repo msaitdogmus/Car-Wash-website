@@ -1,0 +1,8 @@
+@model Appointment
+@using System.Collections.Generic
+@{
+    ViewData["Title"] = "Randevu ekle";
+    var users = ViewBag.Users as IEnumerable<User> ?? Enumerable.Empty<User>();
+    var services = ViewBag.Services as IEnumerable<Service> ?? Enumerable.Empty<Service>();
+}
+<section class="container py-5" style="max-width:720px"><h1>Müşteri adına randevu</h1><partial name="_AppointmentForm" model="Model" /></section>
