@@ -1,0 +1,34 @@
+@using System.Collections.Generic
+@{
+    ViewData["Title"] = "Randevu al";
+    var services = ViewBag.Services as IEnumerable<Service> ?? Enumerable.Empty<Service>();
+}
+<section class="container py-5" style="max-width: 720px">
+    <h1>Randevu oluştur</h1>
+    <p class="text-secondary">Saatler 07.00–19.30 arasında, 30 dakikalık aralıklarla açılır.</p>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <form asp-action="Book" method="post" class="vstack gap-3">
+        <div><label class="form-label" for="serviceId">Hizmet</label><select class="form-select" id="serviceId" name="serviceId" required><option value="">Seçin</option>@foreach (var service in services) { <option value="@service.Id">@service.Name — @service.Price.ToString("N2") ₺</option> }</select></div>
+        <div><label class="form-label" for="appointmentDate">Tarih</label><input class="form-control" id="appointmentDate" name="appointmentDate" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" required /></div>
+        <div><label class="form-label" for="appointmentTime">Saat</label><select class="form-select" id="appointmentTime" name="appointmentTime" required><option value="">Önce tarih ve hizmet seçin</option></select></div>
+        <button class="btn btn-primary" type="submit">Randevuyu kaydet</button>
+    </form>
+</section>
+@section Scripts {
+<script>
+(() => {
+    const date = document.getElementById("appointmentDate");
+    const service = document.getElementById("serviceId");
+    const time = document.getElementById("appointmentTime");
+    async function loadSlots() {
+        if (!date.value || !service.value) return;
+        const url = `@Url.Action("GetAvailableSlots")?date=${encodeURIComponent(date.value)}&serviceId=${encodeURIComponent(service.value)}`;
+        const slots = await fetch(url, { credentials: "same-origin" }).then(response => response.json());
+        time.replaceChildren(new Option(slots.length ? "Saat seçin" : "Uygun saat yok", ""));
+        slots.forEach(slot => time.add(new Option(slot, slot)));
+    }
+    date.addEventListener("change", loadSlots);
+    service.addEventListener("change", loadSlots);
+})();
+</script>
+}

@@ -1,0 +1,8 @@
+@model IEnumerable<Appointment>
+@{ ViewData["Title"] = "Geçmiş randevular"; }
+<section class="container py-5">
+    <h1>Geçmiş randevular</h1>
+    <div class="table-responsive"><table class="table"><thead><tr><th>Hizmet</th><th>Tarih</th><th>Onay</th></tr></thead><tbody>
+    @foreach (var appointment in Model) { <tr><td>@appointment.Service?.Name</td><td>@appointment.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</td><td>@(appointment.IsConfirmed ? "Onaylandı" : "Bekliyor")</td></tr> }
+    </tbody></table></div>
+</section>
