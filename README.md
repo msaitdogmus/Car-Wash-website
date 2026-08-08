@@ -42,9 +42,8 @@ Arayüzü otomotiv sektörüne uygun koyu lacivert, grafit, turkuaz ve yeşil to
 - İlk ziyarette deneyimi kapatmayan daha kompakt çerez tercih ekranı
 
 <p align="center">
-  <img src="docs/screenshots/02-anasayfa-mobil.png" alt="DryCar mobil ana sayfa" width="31%" />
-  <img src="docs/screenshots/05-uyelik-mobil.png" alt="DryCar mobil üyelik" width="31%" />
-  <img src="docs/screenshots/06-yuz-dogrulama-mobil.png" alt="DryCar mobil yüz doğrulama" width="31%" />
+  <img src="docs/screenshots/05-uyelik.png" alt="DryCar masaüstü üyelik ekranı" width="49%" />
+  <img src="docs/screenshots/06-yuz-dogrulama.png" alt="DryCar masaüstü yüz doğrulama ekranı" width="49%" />
 </p>
 
 ## Temel kullanıcı akışları
@@ -66,7 +65,7 @@ Arayüzü otomotiv sektörüne uygun koyu lacivert, grafit, turkuaz ve yeşil to
 
 <p align="center">
   <img src="docs/screenshots/08-admin-randevu-yonetimi.png" alt="DryCar yönetici randevu paneli" width="49%" />
-  <img src="docs/screenshots/09-admin-randevu-olusturma.png" alt="DryCar yönetici randevu oluşturma" width="49%" />
+  <img src="docs/screenshots/09-admin-hizmet-yonetimi.png" alt="DryCar gece temalı hizmet yönetimi" width="49%" />
 </p>
 
 ## Mimari
@@ -140,11 +139,9 @@ Bu dosyalar yaklaşımı okunabilir biçimde göstermek için sadeleştirilmişt
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/07-randevu-akisi.png" alt="DryCar randevu ekranı" width="49%" />
-  <img src="docs/screenshots/10-admin-hizmetler-mobil.png" alt="DryCar mobil hizmet yönetimi" width="27%" />
+  <img src="docs/screenshots/07-randevu-akisi.png" alt="DryCar masaüstü randevu ekranı" width="82%" />
 </p>
 
 ---
 
 Canlı ürünü incelemek için: **[drycarkirsehir.com.tr](https://drycarkirsehir.com.tr/)**
-

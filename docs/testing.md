@@ -21,6 +21,11 @@ Aşağıdaki 10 rota hem 1440/1600 piksel masaüstü hem 390 piksel mobil görü
 
 Sonuç: **20/20 başarılı HTTP yanıtı**, **0 yatay taşma**, **0 tarayıcı konsol hatası**.
 
+Gece teması ayrıca KVKK, gizlilik, çerez, giriş, üyelik, parola kurtarma,
+randevu ve beş yetkili yönetim ekranında yeniden tarandı. Eski Razor
+kartlarından kalan açık arka plan/açık yazı çakışmaları giderildi; masaüstü ve
+mobil ölçülerde okunmayan yüzey ya da yatay taşma kalmadı.
+
 ### Yetkili yönetici akışı
 
 İzole bir geçici yönetici hesabıyla gerçek giriş yapılarak şu ekranlar kontrol edildi:
@@ -71,4 +76,3 @@ Testlerde benzersiz isimli bir yönetici ve `.invalid` uzantılı bir müşteri 
 ## Kapsam sınırı
 
 Bu rapor production güvenlik testi ve kullanıcı akışı regresyonudur; bağımsız penetrasyon testi sertifikası değildir. Yüz doğrulama mekanizmasının gelişmiş presentation attack senaryoları ayrıca uzman biyometrik test gerektirir.
-
