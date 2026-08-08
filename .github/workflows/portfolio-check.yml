@@ -1,0 +1,67 @@
+name: portfolio-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build the representative C# samples
+        run: dotnet build samples/DryCar.PortfolioSamples.csproj --configuration Release
+
+      - name: Check the Python sample
+        run: python -m py_compile samples/face_liveness_pipeline.py
+
+      - name: Validate portfolio structure and local links
+        run: |
+          python - <<'PY'
+          import pathlib
+          import re
+
+          root = pathlib.Path('.')
+          required = [
+              root / 'README.md',
+              root / 'docs' / 'architecture.md',
+              root / 'docs' / 'security.md',
+              root / 'docs' / 'testing.md',
+          ]
+          missing = [str(path) for path in required if not path.is_file()]
+          if missing:
+              raise SystemExit('Missing required files: ' + ', '.join(missing))
+
+          for markdown in root.glob('**/*.md'):
+              text = markdown.read_text(encoding='utf-8')
+              targets = re.findall(r'!?(?:\[[^]]*\])\(([^)]+)\)', text)
+              targets += re.findall(r'(?:src|href)="([^"]+)"', text)
+              for target in targets:
+                  if target.startswith(('http://', 'https://', '#')):
+                      continue
+                  path = (markdown.parent / target.split('#', 1)[0]).resolve()
+                  if not path.exists():
+                      raise SystemExit(f'Broken local link in {markdown}: {target}')
+
+          screenshots = list((root / 'docs' / 'screenshots').glob('*.png'))
+          if len(screenshots) < 8:
+              raise SystemExit('Expected at least eight current product screenshots')
+          PY
+
+      - name: Ensure production source and obvious secrets are not published
+        run: |
+          test ! -d src
+          if git grep -nE '(ClientSecret|RefreshToken|ConnectionStrings__|Password=[^*])' -- . ':!docs/security.md' ':!.github/workflows/portfolio-check.yml'; then
+            echo 'Potential production secret or secret-shaped configuration found.'
+            exit 1
+          fi
